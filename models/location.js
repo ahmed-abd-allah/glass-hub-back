@@ -24,22 +24,24 @@ async function createLocationTableIfNotExists() {
       CREATE TABLE locations (
         id SERIAL PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
-        coordinates VARCHAR(255) NOT NULL,
+        lat VARCHAR(255) NOT NULL, 
+        lng VARCHAR(255) NOT NULL, 
         file_url VARCHAR(255) NOT NULL
       );`;
     await pool.query(createTableQuery);
   }
 }
 
-async function createLocation(title, coordinates, fileUrl) {
+async function createLocation(title, lat, lng, fileUrl) {
   try {
     await createLocationTableIfNotExists();
     const result = await pool.query(
-      "INSERT INTO locations (title, coordinates, file_url) VALUES ($1, $2, $3) RETURNING *",
-      [title, coordinates, fileUrl]
+      "INSERT INTO locations (title, lat, lng, file_url) VALUES ($1, $2, $3, $4) RETURNING *",
+      [title, lat, lng, fileUrl]
     );
     return result.rows[0];
   } catch (error) {
+    console.error("Error creating location:", error);
     throw new Error("Unable to create location");
   }
 }
